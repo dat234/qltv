@@ -1,113 +1,106 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Quản lý thư viện</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
 </head>
+
 <body>
-
-<!-- MENU -->
-<div style="margin-bottom: 20px;">
-    <a href="/">📚 Quản lý sách</a> |
-    <a href="/readers">👤 Quản lý độc giả</a> |
-    <a href="/borrows">📖 Quản lý mượn – trả</a> |
-    <a href="/stats">📊 Thống kê</a>
-    {% if session.get('user_id') %}
-        👤 Xin chào, {{ session.get('username') }} |
-        <a href="#" onclick="confirmLogout()">🚪 Đăng xuất</a>
-
-    {% else %}
-        <a href="/login">🔐 Đăng nhập</a> |
-        <a href="/register">📝 Đăng ký</a>
-    {% endif %}   
-</div>
-
-<hr>
-<p><strong>📂 Bạn đang ở:</strong> Quản lý độc giả</p>
-
-<h1>📚 Quản lý thư viện</h1>
-
-<h2>Thêm độc giả mới</h2>
-<form method="POST" action="/add_reader">
-    <input name="name" placeholder="Họ tên" required>
-    <input name="dob" type="date" required>
-    <input name="email" type="email" placeholder="Email" required>
-    <input name="phone" placeholder="Số điện thoại" required>
-    <input name="address" placeholder="Địa chỉ">
-    <button type="submit">Thêm độc giả</button>
-</form>
-<!-- Form tìm kiếm độc giả -->
-<h3>Tìm kiếm độc giả</h3>
-<form method="GET" action="/search_readers" style="margin-bottom: 15px;">
-    <input type="text" name="q" placeholder="Nhập tên hoặc ID độc giả..." style="width: 300px;">
-    <button type="submit">🔍 Tìm</button>   
-</form>
-<!-- Nút quay lại toàn bộ danh sách -->
-<a href="/readers">↩️ Hiển thị tất cả độc giả</a>
-<hr>
-
-<h2>Danh sách độc giả</h2>
-<table border="1" cellpadding="5" cellspacing="0">
-    <tr style="background-color: #f2f2f2;">
-        <th>ID</th>
-        <th>Họ tên</th>
-        <th>Ngày sinh</th>
-        <th>Email</th>
-        <th>SĐT</th>
-        <th>Địa chỉ</th>
-        <th>Ngày đăng ký</th>
-        <th>Hành động</th>
-    </tr>
-    {% for r in readers %}
-    <tr>
-        <td>{{ r[0] }}</td>
-        <td>{{ r[1] }}</td>
-        <td>{{ r[2] }}</td>
-        <td>{{ r[3] }}</td>
-        <td>{{ r[4] }}</td>
-        <td>{{ r[5] }}</td>
-        <td>{{ r[6] }}</td>
-        <td>
-            <a href="/edit_reader/{{ r[0] }}">✏️ Sửa</a> |
-            <a href="/delete_reader/{{ r[0] }}" onclick="return confirm('Xoá độc giả này?')">🗑️ Xoá</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-<script>
-function confirmLogout() {
-    const confirmBox = document.createElement("div");
-    confirmBox.style.position = "fixed";
-    confirmBox.style.top = "50%";
-    confirmBox.style.left = "50%";
-    confirmBox.style.transform = "translate(-50%, -50%)";
-    confirmBox.style.background = "#fff";
-    confirmBox.style.border = "2px solid #16a34a";
-    confirmBox.style.padding = "30px";
-    confirmBox.style.borderRadius = "12px";
-    confirmBox.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.15)";
-    confirmBox.style.zIndex = "9999";
-    confirmBox.style.textAlign = "center";
-    confirmBox.style.minWidth = "320px";
-    confirmBox.innerHTML = `
-        <p style="font-size: 16px; margin-bottom: 20px;">
-            <span style="font-size: 20px;">⚠️</span> Bạn có chắc chắn muốn đăng xuất?
-        </p>
-        <div style="display: flex; justify-content: center; gap: 20px;">
-            <button onclick="window.location.href='/logout'" 
-                style="background-color: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                ✅ Có
-            </button>
-            <button onclick="this.closest('div').parentElement.remove()" 
-                style="background-color: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                ❌ Không
-            </button>
+    <header>
+        <div class="library-name">📚 Quản lý thư viện</div>
+        <div class="user-info">
+            <span> Xin chào👤{{ session.get('username') }}</span>
+            <button onclick="location.href='/logout'">Đăng xuất</button>
         </div>
-    `;
-    document.body.appendChild(confirmBox);
-}
-</script>
+    </header>
+    <div class="content-wrapper">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-item">
+                <i class="fas fa-book"></i>
+                <span>Quản lý sách</span>
+            </a>
+            <a href="/readers" class="sidebar-item active">
+                <i class="fas fa-users"></i>
+                <span>Quản lý độc giả</span>
+            </a>
+            <a href="/borrows" class="sidebar-item">
+                <i class="fas fa-receipt"></i>
+                <span>Quản lý mượn trả</span>
+            </a>
+            <a href="/stats" class="sidebar-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Thống kê</span>
+            </a>
+        </nav>
 
+        <main class="main-content">
+            
 
+            <div class="left-panel">
+                <section class="search-panel">
+                    <h3>Tìm kiếm độc giả</h3>
+                    <form method="GET" action="/search_readers" class="search-form">
+                        <input type="text" name="q" placeholder="Nhập tên hoặc ID độc giả..." style="width: 300px;">
+                        <button type="submit">🔍 Tìm</button>
+                        <button onclick="location.href='/readers'" class="show-all-button">↩️ Trở về</button>
+                    </form>
+                </section>
+
+                <section class="list-panel">
+                    <h2>Danh sách độc giả</h2>
+                    <table>
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th>ID</th>
+                                <th>Họ tên</th>
+                                <th>Ngày sinh</th>
+                                <th>Email</th>
+                                <th>SĐT</th>
+                                <th>Địa chỉ</th>
+                                <th>Ngày đăng ký</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in readers %}
+                            <tr>
+                                <td>{{ r[0] }}</td>
+                                <td>{{ r[1] }}</td>
+                                <td>{{ r[2] }}</td>
+                                <td>{{ r[3] }}</td>
+                                <td>{{ r[4] }}</td>
+                                <td>{{ r[5] }}</td>
+                                <td>{{ r[6] }}</td>
+                                <td>
+                                    <a href="/edit_reader/{{ r[0] }}">✏️ Sửa</a> |
+                                    <a href="/delete_reader/{{ r[0] }}" onclick="return confirm('Xoá độc giả này?')">🗑️ Xoá</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+
+            <aside class="right-panel">
+                <h2>Thêm độc giả mới</h2>
+                <form method="POST" action="/add_reader" class="add-form">
+                    <input name="name" placeholder="Họ tên" required>
+                    <input name="dob" type="date" required>
+                    <input name="email" type="email" placeholder="Email" required>
+                    <input name="phone" placeholder="Số điện thoại" required>
+                    <input name="address" placeholder="Địa chỉ">
+                    <button type="submit">Thêm độc giả</button>
+                </form>
+            </aside>
+        </main>
+    </div>
 </body>
+
 </html>

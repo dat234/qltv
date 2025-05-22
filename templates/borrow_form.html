@@ -3,95 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>Phiếu mượn sách</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}" />
 </head>
 <body>
-
-<!-- MENU -->
-<div style="margin-bottom: 20px;">
-    <a href="/">📚 Quản lý sách</a> |
-    <a href="/readers">👤 Quản lý độc giả</a> |
-    <a href="/borrows">📖 Quản lý mượn – trả</a> |
-    <a href="/stats">📊 Thống kê</a>
-    {% if session.get('user_id') %}
-        👤 Xin chào, {{ session.get('username') }} |
-        <a href="#" onclick="confirmLogout()">🚪 Đăng xuất</a>
-
-    {% else %}
-        <a href="/login">🔐 Đăng nhập</a> |
-        <a href="/register">📝 Đăng ký</a>
-    {% endif %}
-</div>
-<hr>
-<p><strong>📂 Bạn đang ở:</strong> Tạo phiếu mượn</p>
-
-<h1>📚 Quản lý thư viện</h1>
-<h2>➕ Tạo phiếu mượn sách</h2>
-
-<!-- THÔNG BÁO LỖI -->
-{% if error %}
-    <p style="color:red;">❌ {{ error }}</p>
-{% endif %}
-
-<!-- FORM TẠO PHIẾU MƯỢN -->
-<form method="POST" action="/add_borrow">
-    <label>Độc giả:</label><br>
-    <input name="reader_name" list="reader_list" required placeholder="Nhập tên độc giả...">
-    <datalist id="reader_list">
-        {% for r in readers %}
-        <option value="{{ r[1] }}" data-id="{{ r[0] }}"></option>
-        {% endfor %}
-    </datalist><br><br>
-
-    <label>Sách:</label><br>
-    <input name="book_title" list="book_list" required placeholder="Nhập tên sách...">
-    <datalist id="book_list">
-        {% for b in books %}
-        <option value="{{ b[1] }}" data-id="{{ b[0] }}"></option>
-        {% endfor %}
-    </datalist><br><br>
-
-    <label>Ngày mượn:</label><br>
-    <input type="date" name="borrow_date" required><br><br>
-
-    <label>Hạn trả:</label><br>
-    <input type="date" name="due_date"><br><br>
-
-    <button type="submit">📥 Xác nhận mượn</button>
-    <a href="/borrows">← Quay lại</a>
-</form>
-<script>
-function confirmLogout() {
-    const confirmBox = document.createElement("div");
-    confirmBox.style.position = "fixed";
-    confirmBox.style.top = "50%";
-    confirmBox.style.left = "50%";
-    confirmBox.style.transform = "translate(-50%, -50%)";
-    confirmBox.style.background = "#fff";
-    confirmBox.style.border = "2px solid #16a34a";
-    confirmBox.style.padding = "30px";
-    confirmBox.style.borderRadius = "12px";
-    confirmBox.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.15)";
-    confirmBox.style.zIndex = "9999";
-    confirmBox.style.textAlign = "center";
-    confirmBox.style.minWidth = "320px";
-    confirmBox.innerHTML = `
-        <p style="font-size: 16px; margin-bottom: 20px;">
-            <span style="font-size: 20px;">⚠️</span> Bạn có chắc chắn muốn đăng xuất?
-        </p>
-        <div style="display: flex; justify-content: center; gap: 20px;">
-            <button onclick="window.location.href='/logout'" 
-                style="background-color: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                ✅ Có
-            </button>
-            <button onclick="this.closest('div').parentElement.remove()" 
-                style="background-color: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                ❌ Không
-            </button>
+    <header>
+        <div class="library-name">📚 Quản lý thư viện</div>
+        <div class="user-info">
+            <span> Xin chào👤{{ session.get('username') }}</span>
+            <button onclick="location.href='/logout'">Đăng xuất</button>
         </div>
-    `;
-    document.body.appendChild(confirmBox);
-}
-</script>
+    </header>
+    <div class="content-wrapper">
+        <nav class="sidebar" aria-label="Menu điều hướng chính">
+            <a href="/" class="sidebar-item">
+                <i class="fas fa-book"></i>
+                <span>Quản lý sách</span>
+            </a>
+            <a href="/readers" class="sidebar-item">
+                <i class="fas fa-users"></i>
+                <span>Quản lý độc giả</span>
+            </a>
+            <a href="/borrows" class="sidebar-item active">
+                <i class="fas fa-receipt"></i>
+                <span>Quản lý mượn trả</span>
+            </a>
+            <a href="/stats" class="sidebar-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Thống kê</span>
+            </a>
+        </nav>
+        <main class="content">
+            <h2>➕ Tạo phiếu mượn sách</h2>
 
+            {% if error %}
+                <p style="color:red;">❌ {{ error }}</p>
+            {% endif %}
+
+            <form method="POST" action="/add_borrow">
+                <label for="reader_name">Độc giả:</label><br>
+                <input name="reader_name" id="reader_name" list="reader_list" required placeholder="Nhập tên độc giả...">
+                <datalist id="reader_list">
+                    {% for r in readers %}
+                    <option value="{{ r[1] }}" data-id="{{ r[0] }}"></option>
+                    {% endfor %}
+                </datalist><br><br>
+
+                <label for="book_title">Sách:</label><br>
+                <input name="book_title" id="book_title" list="book_list" required placeholder="Nhập tên sách...">
+                <datalist id="book_list">
+                    {% for b in books %}
+                    <option value="{{ b[1] }}" data-id="{{ b[0] }}"></option>
+                    {% endfor %}
+                </datalist><br><br>
+
+                <label for="borrow_date">Ngày mượn:</label><br>
+                <input type="date" id="borrow_date" name="borrow_date" required><br><br>
+
+                <label for="due_date">Hạn trả:</label><br>
+                <input type="date" id="due_date" name="due_date"><br><br>
+
+                <button type="submit">📥 Xác nhận mượn</button>
+                <a href="/borrows">← Quay lại</a>
+            </form>
+        </main>
+    </div>
 </body>
 </html>

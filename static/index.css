@@ -258,81 +258,106 @@ main.main-content {
     background-color: #15c0bd;
 }
 
-/* Nội dung chính - trang sửa sách (edit.html) */
-main.content {
-    flex-grow: 1; /* Chiếm phần không gian còn lại */
-    padding: 20px;
-    overflow-y: auto; /* Cho phép cuộn dọc nếu nội dung dài */
-    display: flex; /* Sử dụng flexbox để căn giữa */
-    flex-direction: column; /* Sắp xếp các phần tử bên trong theo chiều dọc */
-    align-items: center; /* Căn giữa các phần tử theo chiều ngang */
-    justify-content: flex-start; /* Bắt đầu nội dung từ trên xuống */
+.show-all-button {
+    padding: 10px 20px;
+    background-color: #2e7d32; /* Màu nền giống nút Tìm */
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    margin-left: 10px; /* Thêm khoảng cách bên trái */
+    text-decoration: none; /* Loại bỏ gạch chân nếu bạn muốn nó trông giống button hơn */
 }
 
-main.content form {
-    width: 80%; /* Điều chỉnh độ rộng của form */
-    max-width: 600px; /* Giới hạn độ rộng tối đa của form */
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    margin-top: 20px; /* Tạo khoảng cách với phần tiêu đề "Bạn đang ở:" */
+.show-all-button:hover {
+    background-color: #15bac0; /* Hiệu ứng hover giống nút Tìm */
 }
 
-main.content h2 {
-    text-align: center; /* Căn giữa tiêu đề "Sửa sách" */
+/* mượn trả */
+.borrow-actions {
+    display: flex;
+    gap: 15px;
     margin-bottom: 20px;
+    align-items: center;
 }
 
-main.content label {
-    display: block; /* Mỗi label trên một dòng */
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-main.content input[type="text"],
-main.content input[type="number"] {
-    width: calc(100% - 12px); /* Để có khoảng trắng bên trong */
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* Để padding không làm tăng kích thước phần tử */
-}
-
-main.content button[type="submit"],
-main.content a {
+.return-button, .add-button {
     padding: 10px 15px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 10px;
-}
-
-main.content button[type="submit"] {
-    background-color: #007bff;
-    color: white;
+    font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
-main.content button[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
-main.content a {
-    background-color: #6c757d;
+.return-button {
+    background-color: #6c757d; /* Màu xám */
     color: white;
-    transition: background-color 0.3s ease;
-    margin-left: 10px;
 }
 
-main.content a:hover {
+.return-button:hover {
     background-color: #545b62;
 }
 
-main.content p strong {
-    display: block; /* "Bạn đang ở:" trên một dòng riêng */
-    margin-bottom: 10px;
+.add-button {
+    background-color: #28a745; /* Màu xanh lá cây */
+    color: white;
+}
+
+.add-button:hover {
+    background-color: #1e7e34;
+}
+
+.action-link {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 5px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.return-link {
+    background-color: #2e7d32;
+    color: white;
+}
+
+.return-link:hover {
+    background-color: #15c0bd;
+}
+
+.delete-link {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-link:hover {
+    background-color: #c82333;
+}
+
+/* Điều chỉnh bảng cho phù hợp màn hình hơn */
+.list-panel table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto; /* Thêm thanh cuộn ngang nếu bảng quá rộng */
+    display: block; /* Để overflow-x hoạt động */
+}
+
+.list-panel th, .list-panel td {
+    border: 1px solid #cccccc;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap; /* Ngăn chữ xuống dòng trong ô */
+}
+
+.list-panel th {
+    background-color: #f2f2f2;
+}
+
+.list-panel tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
