@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+
+</head>
+<body>
+    <!-- TIÊU ĐỀ TRANG -->
+    <div class="page-title">
+        Đăng ký tài khoản quản trị
+        <img src="{{ url_for('static', filename='book-icon.png') }}" alt="Book Icon" class="title-icon">
+    </div>
+
+    <!-- FORM ĐĂNG KÝ -->
+    <div class="auth-box">
+        <form method="POST" autocomplete="off">
+            <label>Tên đăng nhập:</label>
+            <input name="username" required>
+
+            <label>Mật khẩu:</label>
+            <div class="pw-wrapper">
+                <input id="reg-password" name="password" type="password" required>
+                <button type="button" onclick="toggleRegisterPassword()">👁</button>
+            </div>
+
+            <button type="submit">📝 Tạo tài khoản</button>
+        </form>
+
+        <!-- LINK CHUYỂN SANG ĐĂNG NHẬP -->
+        <div class="auth-switch">
+            Đã có tài khoản? <a href="/login">🔓 Đăng nhập</a>
+        </div>
+    </div>
+
+    <!-- SCRIPT ẨN/HIỆN MẬT KHẨU -->
+    <script>
+        function toggleRegisterPassword() {
+            const pw = document.getElementById("reg-password");
+            pw.type = pw.type === "password" ? "text" : "password";
+        }
+    </script>
+</body>
+</html>

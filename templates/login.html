@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+
+</head>
+<body>
+<div class="page-title">
+    Đăng nhập hệ thống thư viện
+    <img src="{{ url_for('static', filename='book-icon.png') }}" alt="Book Icon" class="title-icon">
+</div>
+
+
+
+    <div class="auth-box">
+        <!-- THÔNG BÁO -->
+        {% if request.args.get('success') == '1' %}
+            <p class="success-msg">✅ Tạo tài khoản thành công! Vui lòng đăng nhập.</p>
+        {% endif %}
+        {% if request.args.get('error') == '1' %}
+            <p class="error-msg">❌ Sai tên đăng nhập hoặc mật khẩu!</p>
+        {% endif %}
+
+        <form method="POST" autocomplete="off">
+            <label>Tên đăng nhập:</label>
+            <input name="username" required>
+
+            <label>Mật khẩu:</label>
+            <div class="pw-wrapper">
+                <input id="password" name="password" type="password" required>
+                <button type="button" onclick="togglePassword()">👁</button>
+            </div>
+
+            <button type="submit">🔓 Đăng nhập</button>
+        </form>
+
+        <div class="auth-switch">
+            Chưa có tài khoản? <a href="/register">📩 Đăng ký</a>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const pw = document.getElementById("password");
+            pw.type = pw.type === "password" ? "text" : "password";
+        }
+        setTimeout(() => {
+            const success = document.getElementById("success-msg");
+            const error = document.getElementById("error-msg");
+            if (success) success.style.display = "none";
+            if (error) error.style.display = "none";
+        }, 3000);
+    </script>
+</body>
+</html>

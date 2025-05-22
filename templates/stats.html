@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Thống kê thư viện</title>
+</head>
+<body>
+
+<div style="margin-bottom: 20px;">
+    <a href="/">📚 Quản lý sách</a> |
+    <a href="/readers">👤 Quản lý độc giả</a> |
+    <a href="/borrows">📖 Mượn – trả</a> |
+    <a href="/stats">📊 Thống kê</a>
+    {% if session.get('user_id') %}
+        👤 Xin chào, {{ session.get('username') }} |
+        <a href="#" onclick="confirmLogout()">🚪 Đăng xuất</a>
+
+    {% else %}
+        <a href="/login">🔐 Đăng nhập</a> |
+        <a href="/register">📝 Đăng ký</a>
+    {% endif %}
+</div>
+<hr>
+<h1>📊 Thống kê thư viện</h1>
+
+<h2>📘 Sách được mượn nhiều nhất</h2>
+<ul>
+    {% for title, count in top_books %}
+    <li>{{ title }} – {{ count }} lượt</li>
+    {% endfor %}
+</ul>
+
+<h2>👤 Độc giả mượn nhiều nhất</h2>
+<ul>
+    {% for name, count in top_readers %}
+    <li>{{ name }} – {{ count }} lượt</li>
+    {% endfor %}
+</ul>
+
+<h2>📅 Số lượt mượn theo tháng</h2>
+<ul>
+    {% for month, count in monthly_stats %}
+    <li>{{ month }} – {{ count }} lượt</li>
+    {% endfor %}
+</ul>
+<script>
+function confirmLogout() {
+    const confirmBox = document.createElement("div");
+    confirmBox.style.position = "fixed";
+    confirmBox.style.top = "50%";
+    confirmBox.style.left = "50%";
+    confirmBox.style.transform = "translate(-50%, -50%)";
+    confirmBox.style.background = "#fff";
+    confirmBox.style.border = "2px solid #16a34a";
+    confirmBox.style.padding = "30px";
+    confirmBox.style.borderRadius = "12px";
+    confirmBox.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.15)";
+    confirmBox.style.zIndex = "9999";
+    confirmBox.style.textAlign = "center";
+    confirmBox.style.minWidth = "320px";
+    confirmBox.innerHTML = `
+        <p style="font-size: 16px; margin-bottom: 20px;">
+            <span style="font-size: 20px;">⚠️</span> Bạn có chắc chắn muốn đăng xuất?
+        </p>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <button onclick="window.location.href='/logout'" 
+                style="background-color: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                ✅ Có
+            </button>
+            <button onclick="this.closest('div').parentElement.remove()" 
+                style="background-color: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                ❌ Không
+            </button>
+        </div>
+    `;
+    document.body.appendChild(confirmBox);
+}
+</script>
+
+
+</body>
+</html>
