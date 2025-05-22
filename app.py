@@ -426,29 +426,45 @@ def statistics():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # 1. Sách được mượn nhiều nhất
+    # 1. Tổng số sách
+    cursor.execute('SELECT COUNT(*) FROM books')
+    total_books = cursor.fetchone()[0]
+
+    # 2. Tổng số độc giả
+    cursor.execute('SELECT COUNT(*) FROM readers')
+    total_readers = cursor.fetchone()[0]
+
+    # 3. Sách đang mượn
+    cursor.execute('SELECT COUNT(*) FROM borrows WHERE return_date IS NULL')
+    borrowed_books = cursor.fetchone()[0]
+
+    # 4. Sách đã trả
+    cursor.execute('SELECT COUNT(*) FROM borrows WHERE return_date IS NOT NULL')
+    returned_books = cursor.fetchone()[0]
+
+    # 5. Sách được mượn nhiều nhất
     cursor.execute('''
-        SELECT books.title, COUNT(*) AS total
-        FROM borrows
-        JOIN books ON borrows.book_id = books.id
-        GROUP BY borrows.book_id
+        SELECT b.title, COUNT(*) AS total
+        FROM borrows bo
+        JOIN books b ON bo.book_id = b.id
+        GROUP BY bo.book_id
         ORDER BY total DESC
         LIMIT 5
     ''')
     top_books = cursor.fetchall()
 
-    # 2. Độc giả mượn nhiều nhất
+    # 6. Độc giả mượn nhiều nhất
     cursor.execute('''
-        SELECT readers.name, COUNT(*) AS total
-        FROM borrows
-        JOIN readers ON borrows.reader_id = readers.id
-        GROUP BY borrows.reader_id
+        SELECT r.name, COUNT(*) AS total
+        FROM borrows bo
+        JOIN readers r ON bo.reader_id = r.id
+        GROUP BY bo.reader_id
         ORDER BY total DESC
         LIMIT 5
     ''')
     top_readers = cursor.fetchall()
 
-    # 3. Số lượt mượn theo tháng/năm
+    # 7. Số lượt mượn theo tháng/năm
     cursor.execute('''
         SELECT strftime('%Y-%m', borrow_date) AS month, COUNT(*) AS total
         FROM borrows
@@ -458,10 +474,26 @@ def statistics():
     ''')
     monthly_stats = cursor.fetchall()
 
-    conn.close()
-    return render_template('stats.html', top_books=top_books,
-                           top_readers=top_readers, monthly_stats=monthly_stats)
+    # 8. Tổng doanh thu từ phí phạt (lấy từ cột 'fine')
+    cursor.execute('''
+        SELECT SUM(fine) AS total_fine
+        FROM borrows
+        WHERE fine > 0
+    ''')
+    fine_revenue = cursor.fetchone()[0] or 0
 
+    conn.close()
+    return render_template('stats.html',
+                           total_books=total_books,
+                           total_readers=total_readers,
+                           borrowed_books=borrowed_books,
+                           returned_books=returned_books,
+                           top_books=top_books,
+                           top_readers=top_readers,
+                           monthly_stats=monthly_stats,
+                           fine_revenue=fine_revenue)
+
+# Hàm init_users_table (giữ nguyên)
 def init_users_table():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
