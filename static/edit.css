@@ -1,0 +1,78 @@
+/* Nội dung chính - trang sửa sách (edit.html) */
+main.content {
+    flex-grow: 1; /* Chiếm phần không gian còn lại */
+    padding: 20px;
+    overflow-y: auto; /* Cho phép cuộn dọc nếu nội dung dài */
+    display: flex; /* Sử dụng flexbox để căn giữa */
+    flex-direction: column; /* Sắp xếp các phần tử bên trong theo chiều dọc */
+    align-items: center; /* Căn giữa các phần tử theo chiều ngang */
+    justify-content: flex-start; /* Bắt đầu nội dung từ trên xuống */
+}
+
+main.content form {
+    width: 80%; /* Điều chỉnh độ rộng của form */
+    max-width: 600px; /* Giới hạn độ rộng tối đa của form */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin-top: 20px; /* Tạo khoảng cách với phần tiêu đề "Bạn đang ở:" */
+}
+
+main.content h2 {
+    text-align: center; /* Căn giữa tiêu đề "Sửa sách" */
+    margin-bottom: 20px;
+}
+
+main.content label {
+    display: block; /* Mỗi label trên một dòng */
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+main.content input[type="text"],
+main.content input[type="number"] {
+    width: calc(100% - 12px); /* Để có khoảng trắng bên trong */
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Để padding không làm tăng kích thước phần tử */
+}
+
+main.content button[type="submit"],
+main.content a {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+main.content button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+main.content button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+main.content a {
+    background-color: #6c757d;
+    color: white;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+main.content a:hover {
+    background-color: #545b62;
+}
+
+main.content p strong {
+    display: block; /* "Bạn đang ở:" trên một dòng riêng */
+    margin-bottom: 10px;
+}
