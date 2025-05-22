@@ -1,114 +1,121 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Quản lý thư viện</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
 </head>
+
 <body>
-
-<!-- MENU -->
-<div style="margin-bottom: 20px;">
-    <a href="/">📚 Quản lý sách</a> |
-    <a href="/readers">👤 Quản lý độc giả</a> |
-    <a href="/borrows">📖 Quản lý mượn – trả</a> |
-    <a href="/stats">📊 Thống kê</a>
-    {% if session.get('user_id') %}
-        👤 Xin chào, {{ session.get('username') }} |
-        <a href="#" onclick="confirmLogout()">🚪 Đăng xuất</a>
-
-    {% else %}
-        <a href="/login">🔐 Đăng nhập</a> |
-        <a href="/register">📝 Đăng ký</a>
-    {% endif %}
-</div>
-
-<hr>
-<p><strong>📂 Bạn đang ở:</strong> Quản lý sách</p>
-
-<h1>📚 Quản lý thư viện</h1>
-
-<h2>Thêm sách mới</h2>
-<form method="POST" action="/add">
-    <input name="title" placeholder="Tên sách" required>
-    <input name="author" placeholder="Tác giả" required>
-    <input name="category" placeholder="Thể loại">
-    <input name="publisher" placeholder="Nhà xuất bản">
-    <input name="year" type="number" placeholder="Năm xuất bản">
-    <input name="quantity" type="number" placeholder="Số lượng" required>
-    <button type="submit">📥 Thêm sách</button>
-</form>
-
-<hr>
-
-<form method="GET" action="/search" style="margin-bottom: 10px;">
-    <input type="text" name="q" placeholder="Tìm theo tên, tác giả, thể loại..." style="width: 300px;">
-    <button type="submit">🔍 Tìm</button>
-</form>
-<a href="/">↩️ Hiển thị tất cả sách</a>
-
-
-<h2>Danh sách sách</h2>
-<table border="1" cellpadding="5" cellspacing="0">
-    <tr style="background-color: #f2f2f2;">
-        <th>ID</th>
-        <th>Tên sách</th>
-        <th>Tác giả</th>
-        <th>Thể loại</th>
-        <th>NXB</th>
-        <th>Năm XB</th>
-        <th>Số lượng</th>
-        <th>Hành động</th>
-    </tr>
-    {% for book in books %}
-    <tr>
-        <td>{{ book[0] }}</td>
-        <td>{{ book[1] }}</td>
-        <td>{{ book[2] }}</td>
-        <td>{{ book[3] }}</td>
-        <td>{{ book[4] }}</td>
-        <td>{{ book[5] }}</td>
-        <td>{{ book[6] }}</td>
-        <td>
-            <a href="/edit/{{ book[0] }}">✏️ Sửa</a> |
-            <a href="/delete/{{ book[0] }}" onclick="return confirm('Xoá sách này?')">🗑️ Xoá</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-<script>
-function confirmLogout() {
-    const confirmBox = document.createElement("div");
-    confirmBox.style.position = "fixed";
-    confirmBox.style.top = "50%";
-    confirmBox.style.left = "50%";
-    confirmBox.style.transform = "translate(-50%, -50%)";
-    confirmBox.style.background = "#fff";
-    confirmBox.style.border = "2px solid #16a34a";
-    confirmBox.style.padding = "30px";
-    confirmBox.style.borderRadius = "12px";
-    confirmBox.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.15)";
-    confirmBox.style.zIndex = "9999";
-    confirmBox.style.textAlign = "center";
-    confirmBox.style.minWidth = "320px";
-    confirmBox.innerHTML = `
-        <p style="font-size: 16px; margin-bottom: 20px;">
-            <span style="font-size: 20px;">⚠️</span> Bạn có chắc chắn muốn đăng xuất?
-        </p>
-        <div style="display: flex; justify-content: center; gap: 20px;">
-            <button onclick="window.location.href='/logout'" 
-                style="background-color: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                ✅ Có
-            </button>
-            <button onclick="this.closest('div').parentElement.remove()" 
-                style="background-color: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                ❌ Không
-            </button>
+    <header>
+        <div class="library-name">📚 Quản lý thư viện</div>
+        <div class="user-info">
+            <span> Xin chào👤{{ session.get('username') }}</span>
+            <button onclick="location.href='/logout'">Đăng xuất</button>
         </div>
-    `;
-    document.body.appendChild(confirmBox);
-}
-</script>
+    </header>
 
+    <div class="content-wrapper">
+        <nav class="sidebar">
+            <a href="/" class="sidebar-item active">
+                <i class="fas fa-book"></i>
+                <span>Quản lý sách</span>
+            </a>
+            <a href="/readers" class="sidebar-item">
+                <i class="fas fa-users"></i>
+                <span>Quản lý độc giả</span>
+            </a>
+            <a href="/borrows" class="sidebar-item">
+                <i class="fas fa-receipt"></i>
+                <span>Quản lý mượn trả</span>
+            </a>
+            <a href="/stats" class="sidebar-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Thống kê</span>
+            </a>
+        </nav>
 
+        <main class="main-content">
+            <div class="left-panel">
+                <section class="search-panel">
+                    <form method="GET" action="/search" class="search-form">
+                        <input
+                            type="text"
+                            name="q"
+                            placeholder="Tìm theo tên, tác giả, thể loại..."
+                        />
+                        <button type="submit">🔍 Tìm</button>
+                    </form>
+                </section>
+
+                <section class="list-panel">
+                    <h2>Danh sách sách</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên sách</th>
+                                <th>Tác giả</th>
+                                <th>Thể loại</th>
+                                <th>NXB</th>
+                                <th>Năm XB</th>
+                                <th>Số lượng</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in books %}
+                            <tr>
+                                <td>{{ book[0] }}</td>
+                                <td>{{ book[1] }}</td>
+                                <td>{{ book[2] }}</td>
+                                <td>{{ book[3] }}</td>
+                                <td>{{ book[4] }}</td>
+                                <td>{{ book[5] }}</td>
+                                <td>{{ book[6] }}</td>
+                                <td>
+                                    <a href="/edit/{{ book[0] }}">✏️ Sửa</a> |
+                                    <a
+                                        href="/delete/{{ book[0] }}"
+                                        onclick="return confirm('Xoá sách này?')"
+                                        >🗑️ Xoá</a
+                                    >
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+
+            <aside class="right-panel">
+                <h2>Thêm sách mới</h2>
+                <form method="POST" action="/add" class="add-book-form">
+                    <input name="title" placeholder="Tên sách" required />
+                    <input name="author" placeholder="Tác giả" required />
+                    <input name="category" placeholder="Thể loại" />
+                    <input name="publisher" placeholder="Nhà xuất bản" />
+                    <input
+                        name="year"
+                        type="number"
+                        placeholder="Năm xuất bản"
+                    />
+                    <input
+                        name="quantity"
+                        type="number"
+                        placeholder="Số lượng"
+                        required
+                    />
+                    <button type="submit">📥 Thêm sách</button>
+                </form>
+            </aside>
+        </main>
+    </div>
 </body>
+
 </html>
