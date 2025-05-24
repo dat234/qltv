@@ -2,44 +2,248 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ========== NỀN & GIAO DIỆN AUTH ========== */
+        body {
+            background: linear-gradient(135deg, #dbeafe, #f0fdf4, #fff7ed);
+            background-size: 400% 400%;
+            animation: gradientFlow 10s ease infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Đã thay đổi để căn giữa nội dung theo chiều dọc */
+            min-height: 100vh; /* Ensure background covers full height */
+            margin: 0;
+            /* padding-top: 20px; Đã bỏ padding-top */
+            box-sizing: border-box;
+            font-family: sans-serif; /* Default font */
+            color: #333; /* Default text color */
+        }
 
+        /* Animation nền */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .auth-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 45px 30px;
+            border-radius: 20px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.5s ease;
+            margin-bottom: 20px; /* Add margin at the bottom */
+        }
+
+        form {
+            width: 100%;
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 16px;
+            display: block;
+            color: #1f2937;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background-color: #f0f9ff;
+            transition: all 0.3s ease;
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
+
+        input:focus {
+            border-color: #10b981;
+            background-color: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(to right, #16a34a, #15803d);
+            color: white;
+            padding: 12px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(22, 163, 74, 0.5);
+        }
+
+        .pw-wrapper {
+            display: flex;
+            align-items: center;
+            /* No gap here, input width adjusted to accommodate icon */
+            margin-top: 8px;
+            position: relative; /* For absolute positioning of the icon */
+        }
+
+        .pw-wrapper input {
+            width: 100%; /* Take full width of wrapper */
+            padding-right: 40px; /* Space for the icon */
+        }
+
+        .pw-wrapper button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            position: absolute;
+            right: 10px; /* Position icon inside input field */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280; /* Match text color */
+        }
+
+        .auth-switch {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            color: #475569;
+        }
+
+        .auth-switch a {
+            color: #2563eb;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        .success-msg {
+            color: #059669;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .error-msg {
+            color: #dc2626;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        /* ========== CHỈNH SỬA CHO TÊN ĐĂNG NHẬP ========== */
+        .username-wrapper {
+            display: flex;
+            align-items: center;
+            /* No gap here, input width adjusted to accommodate icon */
+            margin-top: 8px;
+            position: relative; /* For absolute positioning of the icon */
+        }
+
+        .username-wrapper input[type="text"] {
+            width: 100%; /* Take full width of wrapper */
+            padding-right: 40px; /* Space for the icon */
+        }
+
+        .username-wrapper button { /* This is the icon for username, not a button */
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: default; /* Not a clickable button */
+            padding: 0;
+            position: absolute;
+            right: 10px; /* Position icon inside input field */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280; /* Match text color */
+        }
+
+        /* ========== TIÊU ĐỀ TRANG ========== */
+        .page-title {
+            font-size: 2.5em;
+            color: #2e7d32; /* Darker green color */
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-icon {
+            width: 32px;
+            height: 32px;
+        }
+    </style>
 </head>
 <body>
-    <!-- TIÊU ĐỀ TRANG -->
     <div class="page-title">
         Đăng ký tài khoản quản trị
         <img src="{{ url_for('static', filename='book-icon.png') }}" alt="Book Icon" class="title-icon">
     </div>
 
-    <!-- FORM ĐĂNG KÝ -->
     <div class="auth-box">
         <form method="POST" autocomplete="off">
-            <label>Tên đăng nhập:</label>
-            <input name="username" required>
+            <label for="username">Tên đăng nhập:</label>
+            <div class="username-wrapper">
+                <input type="text" id="username" name="username" required>
+                <button type="button" aria-label="Biểu tượng người dùng">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
 
-            <label>Mật khẩu:</label>
+            <label for="reg-password">Mật khẩu:</label>
             <div class="pw-wrapper">
-                <input id="reg-password" name="password" type="password" required>
-                <button type="button" onclick="toggleRegisterPassword()">👁</button>
+                <input type="password" id="reg-password" name="password" required>
+                <button type="button" onclick="toggleRegisterPassword()" aria-label="Hiển thị/Ẩn mật khẩu">
+                    <i class="fas fa-eye"></i>
+                </button>
             </div>
 
             <button type="submit">📝 Tạo tài khoản</button>
         </form>
 
-        <!-- LINK CHUYỂN SANG ĐĂNG NHẬP -->
         <div class="auth-switch">
             Đã có tài khoản? <a href="/login">🔓 Đăng nhập</a>
         </div>
     </div>
 
-    <!-- SCRIPT ẨN/HIỆN MẬT KHẨU -->
     <script>
         function toggleRegisterPassword() {
             const pw = document.getElementById("reg-password");
-            pw.type = pw.type === "password" ? "text" : "password";
+            const toggleBtn = pw.nextElementSibling.querySelector('i'); // Get the eye icon
+
+            if (pw.type === "password") {
+                pw.type = "text";
+                toggleBtn.classList.remove('fa-eye');
+                toggleBtn.classList.add('fa-eye-slash');
+            } else {
+                pw.type = "password";
+                toggleBtn.classList.remove('fa-eye-slash');
+                toggleBtn.classList.add('fa-eye');
+            }
         }
     </script>
 </body>

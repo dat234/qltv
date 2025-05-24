@@ -426,23 +426,29 @@ def statistics():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # 1. Tổng số sách
+    # --- Tổng quan ---
     cursor.execute('SELECT COUNT(*) FROM books')
     total_books = cursor.fetchone()[0]
 
-    # 2. Tổng số độc giả
     cursor.execute('SELECT COUNT(*) FROM readers')
     total_readers = cursor.fetchone()[0]
 
-    # 3. Sách đang mượn
+    # --- Tình trạng sách ---
     cursor.execute('SELECT COUNT(*) FROM borrows WHERE return_date IS NULL')
     borrowed_books = cursor.fetchone()[0]
 
-    # 4. Sách đã trả
     cursor.execute('SELECT COUNT(*) FROM borrows WHERE return_date IS NOT NULL')
     returned_books = cursor.fetchone()[0]
 
-    # 5. Sách được mượn nhiều nhất
+    # --- Doanh thu phạt ---
+    cursor.execute('''
+        SELECT SUM(fine) AS total_fine
+        FROM borrows
+        WHERE fine > 0
+    ''')
+    fine_revenue = cursor.fetchone()[0] or 0
+
+    # --- Sách được mượn nhiều nhất ---
     cursor.execute('''
         SELECT b.title, COUNT(*) AS total
         FROM borrows bo
@@ -453,7 +459,7 @@ def statistics():
     ''')
     top_books = cursor.fetchall()
 
-    # 6. Độc giả mượn nhiều nhất
+    # --- Độc giả mượn nhiều nhất ---
     cursor.execute('''
         SELECT r.name, COUNT(*) AS total
         FROM borrows bo
@@ -464,7 +470,7 @@ def statistics():
     ''')
     top_readers = cursor.fetchall()
 
-    # 7. Số lượt mượn theo tháng/năm
+    # --- Thống kê theo tháng ---
     cursor.execute('''
         SELECT strftime('%Y-%m', borrow_date) AS month, COUNT(*) AS total
         FROM borrows
@@ -474,24 +480,17 @@ def statistics():
     ''')
     monthly_stats = cursor.fetchall()
 
-    # 8. Tổng doanh thu từ phí phạt (lấy từ cột 'fine')
-    cursor.execute('''
-        SELECT SUM(fine) AS total_fine
-        FROM borrows
-        WHERE fine > 0
-    ''')
-    fine_revenue = cursor.fetchone()[0] or 0
-
     conn.close()
     return render_template('stats.html',
                            total_books=total_books,
                            total_readers=total_readers,
                            borrowed_books=borrowed_books,
                            returned_books=returned_books,
+                           fine_revenue=fine_revenue,
                            top_books=top_books,
                            top_readers=top_readers,
-                           monthly_stats=monthly_stats,
-                           fine_revenue=fine_revenue)
+                           monthly_stats=monthly_stats)
+
 
 # Hàm init_users_table (giữ nguyên)
 def init_users_table():
