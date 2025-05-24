@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý thư viện - Sửa sách</title>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+        /* Reset và cơ bản */
+        * {
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0; padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            color: #333; /* Màu chữ mặc định */
+            overflow: hidden; /* Ngăn cuộn toàn bộ trang, chỉ cho phép main-content cuộn */
+        }
+
+        /* ========== NỀN & GIAO DIỆN CHUNG ========== */
+        body {
+            background: linear-gradient(135deg, #dbeafe, #f0fdf4, #fff7ed);
+            background-size: 400% 400%;
+            animation: gradientFlow 10s ease infinite;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Header cố định */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background-color: #1abc9c; /* Màu xanh lá cây ngọc */
+            color: white; /* Màu chữ trắng để nổi bật */
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Căn giữa nội dung header */
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        header .logo .fas { /* Icon trong logo header */
+            color: white; /* Icon màu trắng */
+        }
+        header .user-info {
+            position: absolute; /* Giữ vị trí tuyệt đối để không ảnh hưởng đến căn giữa của logo */
+            right: 20px;
+            font-size: 14px;
+            font-weight: normal;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white; /* Màu chữ trắng cho user-info */
+        }
+        header .user-info .fas { /* Icon trong user-info header */
+            color: white; /* Icon màu trắng */
+        }
+        header .user-info:hover .dropdown {
+            display: block;
+        }
+        header .dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background: white;
+            color: black;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            min-width: 160px;
+            font-size: 14px;
+            text-align: left;
+        }
+        header .dropdown a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: black;
+        }
+        header .dropdown a .fas { /* Icon trong dropdown */
+            color: black;
+        }
+        header .dropdown a:hover {
+            background-color: #16a085; /* Màu hover xanh lá cây ngọc đậm hơn */
+            color: white;
+        }
+        header .dropdown a:hover .fas { /* Icon trong dropdown khi hover */
+            color: white;
+        }
+
+        /* Sidebar cố định */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            bottom: 0;
+            width: 260px;
+            background-color: #e8f8f5; /* Màu xám xanh rất nhạt (lightest teal/mint) */
+            color: #333; /* Màu chữ đen cho sidebar */
+            padding: 15px 20px;
+            overflow-y: auto;
+            z-index: 900;
+            border-right: 1px solid #1abc9c; /* Thêm viền bên phải màu xanh lá cây ngọc */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); /* Thêm bóng đổ nhẹ bên phải */
+        }
+        .sidebar h2 {
+            margin: 0 0 25px 0;
+            font-weight: bold;
+            font-size: 24px;
+            border-bottom: 1px solid #1abc9c; /* Đường gạch chân xanh lá cây ngọc */
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+        }
+        .sidebar h2 .fas { /* Icon trong h2 sidebar */
+            color: #333;
+            font-size: 26px; /* Kích thước icon lớn hơn */
+        }
+        .menu-section {
+            margin-bottom: 20px;
+        }
+        .menu-section > .menu-title {
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            padding: 8px 20px 8px 20px; /* Consistent padding for all menu titles */
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #333; /* Màu chữ đen */
+            user-select: none;
+            border-radius: 4px; /* Add rounded corners */
+            transition: background-color 0.3s, border-left-color 0.3s; /* Add transitions */
+        }
+        .menu-section > .menu-title .fas { /* Icon trong menu-title */
+            /* Màu mặc định cho icon - sẽ được ghi đè bằng inline style */
+            font-size: 18px; /* Kích thước icon */
+        }
+        .menu-section > .menu-title::before {
+            content: '►';
+            position: absolute;
+            left: 8px; /* Adjust position relative to padding */
+            transition: transform 0.3s ease;
+        }
+        .menu-section.active > .menu-title {
+            background-color: #1abc9c; /* Active background màu xanh lá cây ngọc */
+            border-left: 3px solid #16a085; /* Active border màu xanh lá cây ngọc đậm hơn */
+            padding-left: 17px; /* Adjust padding for border */
+            color: white; /* Màu chữ trắng cho active menu */
+        }
+        .menu-section.active > .menu-title .fas { /* Icon trong active menu-title */
+            color: white !important; /* Icon màu trắng khi active, dùng !important để ghi đè inline style */
+        }
+        .menu-section > .menu-title:hover {
+            background-color: #d2f0ec; /* Hover background: Xám xanh đậm hơn một chút */
+        }
+        .menu-section.active > .menu-title::before {
+            transform: rotate(90deg);
+        }
+        .submenu {
+            margin-left: 20px;
+            display: none;
+            flex-direction: column;
+        }
+        .menu-section.active > .submenu {
+            display: flex;
+        }
+        .submenu-item {
+            padding: 6px 0 6px 20px; /* Adjust padding-left to align with menu-title text */
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            color: #333; /* Màu chữ đen */
+            text-decoration: none;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .submenu-item .fas { /* Icon trong submenu-item */
+            /* Màu mặc định cho icon - sẽ được ghi đè bằng inline style */
+            font-size: 16px; /* Kích thước icon */
+        }
+        .submenu-item:hover {
+            background-color: #d2f0ec; /* Hover background: Xám xanh đậm hơn một chút */
+            border-left: 3px solid #1abc9c; /* Border màu xanh lá cây ngọc khi hover */
+        }
+        .submenu-item.active {
+            background-color: #1abc9c; /* Active màu xanh lá cây ngọc */
+            border-left: 3px solid #16a085; /* Active border màu xanh lá cây ngọc đậm hơn */
+            font-weight: bold;
+            color: white !important; /* Màu chữ trắng cho active submenu */
+        }
+        .submenu-item.active .fas { /* Icon trong active submenu-item */
+            color: white !important; /* Icon màu trắng khi active, dùng !important để ghi đè inline style */
+        }
+
+        /* Nội dung chính */
+        .main-content {
+            margin-top: calc(60px + 100px + 20px); /* Bù cho header (60px) + content-header (ước tính 100px) + margin-bottom của content-header (20px) */
+            margin-left: 260px; /* Bắt đầu sau sidebar */
+            padding: 30px;
+            background-color: transparent; /* Đã đổi thành transparent để thấy nền body */
+            min-height: calc(100vh - 60px - 100px - 20px); /* Chiều cao tối thiểu */
+            overflow-y: auto; /* Cho phép cuộn nội dung chính */
+            flex-grow: 1;
+            width: calc(100% - 260px);
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Căn giữa nội dung theo chiều ngang */
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Căn giữa h1 */
+            margin-bottom: 30px;
+            position: fixed; /* Giữ cố định */
+            top: 60px; /* Dưới header */
+            left: 260px; /* Sau sidebar */
+            right: 0;
+            background: rgba(255, 255, 255, 0.95); /* Nền trắng trong suốt */
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(26, 188, 156, 0.25);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            margin: 20px 30px 0 30px;
+            width: calc(100% - 260px - 60px);
+            box-sizing: border-box;
+        }
+
+        .content-header .btn-back {
+            background-color: #f39c12; /* Màu cam làm điểm nhấn */
+            color: white; /* Màu chữ trắng */
+            padding: 0 15px; /* Điều chỉnh padding để cân đối với height */
+            border: none;
+            border-radius: 10px; /* Bo góc đồng nhất với auth-box submit */
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Căn giữa nội dung */
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4); /* Shadow màu cam */
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 44px; /* Đảm bảo chiều cao cố định */
+            position: absolute; /* Đặt nút trở về tuyệt đối */
+            left: 30px; /* Căn trái với padding của content-header */
+        }
+        .content-header .btn-back:hover {
+            background-color: #e67e22; /* Màu hover cam đậm hơn */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(243, 156, 18, 0.5);
+        }
+
+        .content-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin: 0;
+        }
+
+        form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%; /* Chiếm phần lớn chiều ngang */
+            max-width: 600px; /* Giới hạn chiều rộng của form */
+            margin: 0 auto; /* Căn giữa form */
+        }
+
+        form label {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="tel"],
+        form input[type="date"],
+        form input[type="number"] { /* Thêm input type="number" */
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 18px;
+            width: 100%; /* Đảm bảo input chiếm toàn bộ chiều rộng của form */
+        }
+
+        form button[type="submit"] {
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 4px;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: fit-content; /* Nút chỉ rộng bằng nội dung */
+            margin-top: 10px; /* Khoảng cách với input cuối cùng */
+            box-shadow: 0 4px 12px rgba(26, 188, 156, 0.4); /* Shadow màu xanh lá cây */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        form button[type="submit"]:hover {
+            background-color: #16a085;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(26, 188, 156, 0.5);
+        }
+
+        /* Modal xác nhận chung */
+        .confirm-modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .confirm-modal-box {
+            background: #fff;
+            border: 2px solid #ef4444; /* Đổi màu border thành đỏ */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            min-width: 320px;
+            max-width: 90%;
+            /* Căn giữa tuyệt đối */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .confirm-modal-box p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .confirm-modal-box p span {
+            font-size: 20px;
+            margin-right: 8px; /* Khoảng cách giữa icon và text */
+        }
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .confirm-modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .confirm-modal-actions .yes-btn {
+            background-color: #f39c12; /* Màu cam làm điểm nhấn */
+            color: white; /* Màu chữ trắng */
+        }
+        .confirm-modal-actions .no-btn {
+            background-color: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><i class="fas fa-book"></i> Quản Lý Thư Viện</div>
+    <div class="user-info" onclick="toggleDropdown()">
+        {% if session.get('user_id') %}
+            <i class="fas fa-user"></i> Xin chào {{ session.get('username') }} ▼
+            <div class="dropdown" id="userDropdown">
+                <a href="#"><i class="fas fa-key"></i> Đổi mật khẩu</a>
+                <a href="javascript:void(0);" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+        {% else %}
+            <a href="/login" style="color:white; margin-right:15px;">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+            <a href="/register" style="color:white;">
+                <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
+        {% endif %}
+    </div>
+</header>
+<div class="sidebar">
+    <h2><i class="fas fa-book" style="color: #333;"></i> Menu</h2>
+    <div class="menu-section {% if active_section == 'books' %}active{% endif %}" id="section-books">
+        <a href="{{ url_for('index') }}" class="menu-title" onclick="toggleSection('section-books')">
+            <i class="fas fa-book" style="color: #3498db;"></i> Quản lý Sách
+        </a>
+        <div class="submenu">
+            <a href="{{ url_for('index') }}" class="submenu-item {% if active_subsection == 'list_books' %}active{% endif %}">
+                <i class="fas fa-list" style="color: #2ecc71;"></i> Danh sách sách
+            </a>
+            <a href="{{ url_for('add_book') }}" class="submenu-item {% if active_subsection == 'add_book' %}active{% endif %}">
+                <i class="fas fa-plus-circle" style="color: #f1c40f;"></i> Thêm sách mới
+            </a>
+        </div>
+    </div>
+    <div class="menu-section {% if active_section == 'readers' %}active{% endif %}" id="section-readers">
+        <a href="{{ url_for('list_readers') }}" class="menu-title" onclick="toggleSection('section-readers')">
+            <i class="fas fa-user" style="color: #9b59b6;"></i> Quản lý Độc giả
+        </a>
+        <div class="submenu">
+            <a href="{{ url_for('list_readers') }}" class="submenu-item {% if active_subsection == 'list_readers' %}active{% endif %}">
+                <i class="fas fa-list" style="color: #3498db;"></i> Danh sách độc giả
+            </a>
+            <a href="{{ url_for('add_reader') }}" class="submenu-item {% if active_subsection == 'add_reader' %}active{% endif %}">
+                <i class="fas fa-plus-circle" style="color: #f1c40f;"></i> Thêm độc giả
+            </a>
+        </div>
+    </div>
+
+    <div class="menu-section {% if active_section == 'borrows' %}active{% endif %}" id="section-borrows">
+        <a href="{{ url_for('borrow_list') }}" class="menu-title" onclick="toggleSection('section-borrows')">
+            <i class="fas fa-book-reader" style="color: #e67e22;"></i> Quản lý Mượn trả
+        </a>
+        <div class="submenu">
+            <a href="{{ url_for('borrow_list') }}" class="submenu-item {% if active_subsection == 'borrow_list' %}active{% endif %}">
+                <i class="fas fa-list" style="color: #2ecc71;"></i> Danh sách mượn
+            </a>
+            <a href="{{ url_for('returned_borrow_list') }}" class="submenu-item {% if active_subsection == 'borrow_returned' %}active{% endif %}">
+                <i class="fas fa-undo-alt" style="color: #e74c3c;"></i> Danh sách trả
+            </a>
+            <a href="{{ url_for('borrow_form') }}" class="submenu-item {% if active_subsection == 'borrow_form' %}active{% endif %}">
+                <i class="fas fa-plus-circle" style="color: #f1c40f;"></i> Tạo phiếu mượn
+            </a>
+        </div>
+    </div>
+
+    <div class="menu-section {% if active_section == 'stats' %}active{% endif %}" id="section-stats">
+        <a href="{{ url_for('statistics') }}" class="menu-title" onclick="toggleSection('section-stats')">
+            <i class="fas fa-chart-bar" style="color: #3498db;"></i> Thống kê
+        </a>
+        <div class="submenu">
+            <a href="{{ url_for('statistics') }}" class="submenu-item {% if active_subsection == 'overview_report' %}active{% endif %}">
+                <i class="fas fa-file-alt" style="color: #f1c40f;"></i> Báo cáo tổng quan
+            </a>
+        </div>
+    </div>
+
+    <div class="menu-section" id="section-account"> {# Đã bỏ active class mặc định #}
+        <a href="javascript:void(0);" onclick="confirmLogout()" class="menu-title"> {# Đã đổi href trực tiếp đến /logout #}
+            <i class="fas fa-sign-out-alt" style="color: #e74c3c;"></i> Đăng xuất {# Đã đổi chữ thành Đăng xuất #}
+        </a>
+        {# Đã xóa hoàn toàn submenu #}
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="content-header">
+        <a href="javascript:history.back()" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Trở về
+        </a>
+        <h1>Sửa sách</h1>
+    </div>
+
+    <form method="POST" action="/update/{{ book[0] }}">
+        <label for="title">Tên sách:</label>
+        <input type="text" name="title" id="title" value="{{ book[1] }}" placeholder="Tên sách" required>
+
+        <label for="author">Tác giả:</label>
+        <input type="text" name="author" id="author" value="{{ book[2] }}" placeholder="Tác giả" required>
+
+        <label for="category">Thể loại:</label>
+        <input type="text" name="category" id="category" value="{{ book[3] }}" placeholder="Thể loại">
+
+        <label for="publisher">Nhà xuất bản:</label>
+        <input type="text" name="publisher" id="publisher" value="{{ book[4] }}" placeholder="Nhà xuất bản">
+
+        <label for="year">Năm xuất bản:</label>
+        <input type="number" name="year" id="year" value="{{ book[5] }}" placeholder="Năm xuất bản">
+
+        <label for="quantity">Số lượng:</label>
+        <input type="number" name="quantity" id="quantity" value="{{ book[6] }}" placeholder="Số lượng" required>
+
+        <button type="submit"><i class="fas fa-save"></i> Cập nhật</button>
+    </form>
+</div>
+
+<script>
+    // JavaScript cho menu sidebar
+    function toggleSection(id) {
+        const sections = document.querySelectorAll('.menu-section');
+        sections.forEach(section => {
+            if (section.id === id) {
+                section.classList.toggle('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+    }
+
+    // JavaScript cho modal xác nhận đăng xuất
+    function confirmLogout() {
+        const confirmBox = document.createElement("div");
+        confirmBox.classList.add("confirm-modal-overlay");
+        confirmBox.innerHTML = `
+            <div class="confirm-modal-box">
+                <p>
+                    <span style="font-size: 20px;">⚠️</span> Bạn có chắc chắn muốn đăng xuất?
+                </p>
+                <div class="confirm-modal-actions">
+                    <button onclick="window.location.href='/logout'" class="yes-btn">
+                        ✅ Có
+                    </button>
+                    <button onclick="this.closest('.confirm-modal-overlay').remove()" class="no-btn">
+                        ❌ Không
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(confirmBox);
+    }
+
+    // JavaScript để đóng dropdown khi click ra ngoài
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('userDropdown');
+        const userInfo = document.querySelector('.user-info');
+        if (dropdown && userInfo && !userInfo.contains(event.target) && dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // JavaScript để toggle dropdown khi click vào user-info
+    function toggleDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
